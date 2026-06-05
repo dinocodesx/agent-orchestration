@@ -14,19 +14,13 @@ A modular, multi-agent orchestration pipeline built with **LangGraph** and **Gem
    cd agent-orchestration
    ```
 
-2. **Create and activate a virtual environment**:
+2. **Install dependencies**:
+   Using [uv](https://docs.astral.sh/uv/):
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   uv sync --all-extras
    ```
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   pip install -e ".[test]"  # Install test dependencies
-   ```
-
-4. **Configure environment variables**:
+3. **Configure environment variables**:
    Create a `.env` file from the example:
    ```bash
    cp .env.example .env
@@ -35,10 +29,10 @@ A modular, multi-agent orchestration pipeline built with **LangGraph** and **Gem
 
 ## Usage
 
-Run the orchestrator by providing a research query:
+Run the orchestrator by providing a research query using `uv run`:
 
 ```bash
-python main.py --query "What are the latest breakthroughs in fusion energy?"
+uv run main.py --query "What are the latest breakthroughs in fusion energy?"
 ```
 
 ### Options
@@ -61,4 +55,14 @@ Run the integration tests to verify the workflow:
 
 ```bash
 pytest
+```
+ovides feedback or approval.
+6. **Saver**: Persists the final approved report to disk.
+
+## Testing
+
+Run the integration tests to verify the workflow:
+
+```bash
+uv run pytest
 ```
