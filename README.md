@@ -10,12 +10,14 @@ A modular, multi-agent orchestration pipeline built with **LangGraph** and **Gem
 ## Setup
 
 1. **Clone and enter the directory**:
+
    ```bash
    cd agent-orchestration
    ```
 
 2. **Install dependencies**:
    Using [uv](https://docs.astral.sh/uv/):
+
    ```bash
    uv sync --all-extras
    ```
@@ -36,27 +38,19 @@ uv run main.py --query "What are the latest breakthroughs in fusion energy?"
 ```
 
 ### Options
+
 - `--query`: (Required) The topic you want the agents to research.
 - `--output`: (Optional) Path to save the Markdown report. Defaults to `output/report.md`.
 
 ## Architecture
 
 The pipeline consists of several specialized agents:
+
 1. **Planner**: Breaks the query into a multi-step research plan.
 2. **Researcher**: Uses Gemini's Google Search tool to find facts (iterative).
 3. **Summarizer**: Condenses raw findings into concise bullet points.
 4. **Reporter**: Synthesizes the summary into a professional Markdown report.
 5. **Reviewer**: Evaluates the report and provides feedback or approval.
-6. **Saver**: Persists the final approved report to disk.
-
-## Testing
-
-Run the integration tests to verify the workflow:
-
-```bash
-pytest
-```
-ovides feedback or approval.
 6. **Saver**: Persists the final approved report to disk.
 
 ## Testing
