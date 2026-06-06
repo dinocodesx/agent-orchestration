@@ -42,16 +42,18 @@ uv run main.py --query "What are the latest breakthroughs in fusion energy?"
 - `--query`: (Required) The topic you want the agents to research.
 - `--output`: (Optional) Path to save the Markdown report. Defaults to `output/report.md`.
 
-## Architecture
+## Architecture (Modern AI Features)
 
-The pipeline consists of several specialized agents:
+The pipeline now includes industry-standard "Agentic" patterns:
+1. **Planner**: Creates a research plan.
+2. **Human-in-the-Loop (HITL)**: The system **pauses** after planning. You can approve, reject, or edit the plan before research begins.
+3. **Researcher**: Iterative deep research with Google Search.
+4. **Summarizer**: Condenses findings.
+5. **Reporter**: Generates a professional Markdown report.
+6. **LLM-as-a-Judge (Reviewer)**: Evaluates the report using structured metrics (Faithfulness, Relevancy, Structure). It loops back for more research if the score is low.
+7. **Observability**: Supports **LangSmith** tracing (if `LANGSMITH_API_KEY` is in `.env`).
+8. **Saver**: Persists the final approved report.
 
-1. **Planner**: Breaks the query into a multi-step research plan.
-2. **Researcher**: Uses Gemini's Google Search tool to find facts (iterative).
-3. **Summarizer**: Condenses raw findings into concise bullet points.
-4. **Reporter**: Synthesizes the summary into a professional Markdown report.
-5. **Reviewer**: Evaluates the report and provides feedback or approval.
-6. **Saver**: Persists the final approved report to disk.
 
 ## Testing
 

@@ -1,7 +1,8 @@
-"""Workflow graph definition."""
+"""Workflow graph definition with Human-in-the-Loop and Iterative Research."""
 
 import logging
 
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, StateGraph
 
 from agents.planner import planner_node
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def should_continue(state: AgentState):
     """Determine if we should continue researching or approve the report."""
-    if "APPROVED" in state.get("feedback", ""):
+    if "APPROVED" in state.get("feedback", "").upper():
         return "end"
     if state.get("iteration", 0) >= 3:
         logger.warning("Max iterations reached. Ending pipeline.")
@@ -28,6 +29,7 @@ def should_continue(state: AgentState):
 def create_orchestrator():
     """Create a LangGraph StateGraph with advanced orchestration."""
     workflow = StateGraph(AgentState)
+    checkpointer = MemorySaver()
 
     workflow.add_node("planner", planner_node)
     workflow.add_node("researcher", researcher_node)
@@ -53,4 +55,5 @@ def create_orchestrator():
 
     workflow.add_edge("saver", END)
 
-    return workflow.compile()
+    # We use interrupt_before=["researcher"] to allow human approval of the plan
+    return workflow.compile(checkpointer=checkpointer, interrupt_before=["researcher"])

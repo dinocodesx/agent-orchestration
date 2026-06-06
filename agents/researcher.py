@@ -1,4 +1,4 @@
-"""Researcher agent node."""
+"""Researcher agent node - Iterative Deep Research."""
 
 import logging
 
@@ -11,18 +11,26 @@ logger = logging.getLogger(__name__)
 
 
 def researcher_node(state: AgentState) -> dict:
-    """Search for relevant facts using Gemini's built-in Google Search."""
+    """Search for relevant facts with iterative refinement and deep-dive capabilities."""
     iteration = state.get("iteration", 0) + 1
     logger.info(f"Starting research iteration {iteration}...")
     client = get_client()
     model = get_model_name()
 
-    # If we have feedback, use it to refine the search
+    # Context-aware prompting (Industry Trend: Chain-of-Thought Research)
     context = f"Research Plan: {state['research_plan']}\n"
     if state.get("feedback"):
-        context += f"Previous Feedback: {state['feedback']}\n"
+        context += f"PREVIOUS EVALUATION FEEDBACK: {state['feedback']}\n"
 
-    prompt = f"{context}\nFind detailed facts for the next part of the research plan. Current iteration: {iteration}"
+    prompt = f"""
+    {context}
+
+    Your goal is to find high-quality, factual information to fulfill the research plan.
+    If you have previous feedback, prioritize addressing those specific gaps.
+    Look for recent data (2025-2026) and ensure you capture source names for citations.
+
+    Current iteration: {iteration}
+    """
 
     response = client.models.generate_content(
         model=model,
@@ -30,6 +38,7 @@ def researcher_node(state: AgentState) -> dict:
         config=types.GenerateContentConfig(
             temperature=0.2,
             tools=[{"google_search": {}}],
+            # Industry Trend: System instructions or specific search configurations
         ),
     )
 

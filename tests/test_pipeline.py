@@ -7,6 +7,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from langchain_core.runnables import RunnableConfig
+
 from graph import create_orchestrator
 from schema import AgentState
 
@@ -49,6 +51,7 @@ def test_pipeline_runs_with_mocked_gemini(tmp_path: Path, mock_gemini_client) ->
     ]
 
     orchestrator = create_orchestrator()
+    config: RunnableConfig = {"configurable": {"thread_id": "test_thread"}}
 
     initial_state: AgentState = {
         "query": "What are agent frameworks?",
@@ -61,8 +64,15 @@ def test_pipeline_runs_with_mocked_gemini(tmp_path: Path, mock_gemini_client) ->
         "feedback": "",
     }
 
-    result = orchestrator.invoke(initial_state)
+    # First call: runs up to the interrupt (before researcher)
+    result = orchestrator.invoke(initial_state, config=config)
+    assert result["research_plan"] != ""
+    assert result["final_report"] == ""
+
+    # Second call: resumes from the interrupt
+    result = orchestrator.invoke(None, config=config)
 
     assert "# Framework Report" in result["final_report"]
     assert Path(result["report_path"]).exists()
+    # Call count: 1 (planner) + 4 (researcher, summarizer, reporter, reviewer) = 5
     assert mock_gemini_client.models.generate_content.call_count == 5
